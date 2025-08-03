@@ -5,67 +5,131 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>[Forum Title]</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; padding: 20px; }
-        a { color: #1877f2; text-decoration: none; }
+        /* --- Super Bare Bones Styling --- */
+        body {
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            background-color: #FFF;
+            color: #000;
+            margin: 0;
+            padding: 10px;
+        }
+        a { color: #004488; text-decoration: none; }
         a:hover { text-decoration: underline; }
-        button { cursor: pointer; background-color: #e4e6eb; border: none; padding: 8px 12px; border-radius: 6px; }
-        button:hover { background-color: #d8dbdf; }
-        input, textarea { width: 100%; box-sizing: border-box; margin-bottom: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        .container { max-width: 800px; margin: 0 auto; padding: 20px; background-color: #fff; border: 1px solid #dddfe2; border-radius: 8px; }
-        
-        /* Views */
-        #homepage-view, #section-view { display: none; }
-        
-        /* Homepage */
-        .section-list-item { padding: 15px; border-bottom: 1px solid #ddd; }
-        .section-list-item:last-child { border-bottom: none; }
-        .section-title { font-size: 1.2em; font-weight: bold; }
-        .section-description { color: #606770; }
+        h1, h2 { font-size: 18px; margin: 0 0 10px 0; padding: 0; }
+        hr { border: 0; border-top: 1px solid #CCC; }
+        input, textarea, button { font-family: inherit; font-size: inherit; }
+        textarea { width: 400px; height: 120px; }
+        button { background-color: #EFEFEF; border: 1px solid #CCC; padding: 4px 8px; cursor: pointer; }
 
-        /* Section View */
-        .post { border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; background-color: #f9f9f9; }
-        .post-header { font-weight: bold; color: #333; margin-bottom: 10px; }
-        .post-content img { max-width: 100%; border-radius: 4px; margin-top: 10px; }
-        .post-actions { margin-top: 10px; display: flex; align-items: center; gap: 15px; }
-        .upvote-btn { background-color: #e7f3ff; color: #1877f2; }
+        /* Main wrapper */
+        .forum-wrapper { max-width: 900px; margin: 0 auto; border: 1px solid #C0C0C0; }
+        
+        /* Shared Header Style */
+        .view-header {
+            background-color: #004488;
+            color: #FFF;
+            padding: 8px;
+            font-weight: bold;
+        }
+        .view-header a { color: #FFF; }
 
-        /* Replies */
-        .replies-container { border-left: 3px solid #e0e0e0; margin-top: 15px; padding-left: 15px; }
-        .reply { background-color: #fff; border: 1px solid #eee; padding: 10px; margin-top: 10px; border-radius: 6px; }
-        .reply-form { display: none; margin-top: 10px; }
+        /* Content panels */
+        .content-panel { padding: 10px; border-top: 1px solid #C0C0C0; }
+
+        /* Hide views by default */
+        #homepage-view, #section-view, #thread-view { display: none; }
+
+        /* Table-like row styling */
+        .row { display: flex; padding: 8px; border-bottom: 1px solid #E1E1E1; align-items: center; }
+        .row:nth-child(even) { background-color: #F7F7F7; }
+        .row-main { flex-grow: 1; }
+        .row-side { width: 150px; text-align: center; }
+        
+        /* Post Styling (Dreamviews inspired) */
+        .post-container { display: flex; border-top: 1px solid #C0C0C0; padding: 10px 0; }
+        .post-author { width: 150px; padding: 0 10px; text-align: center; flex-shrink: 0; }
+        .post-author .author-name { font-weight: bold; }
+        .post-body { flex-grow: 1; padding: 0 10px; }
+        .post-meta { font-size: 11px; color: #666; border-bottom: 1px solid #E1E1E1; padding-bottom: 8px; margin-bottom: 8px; }
+        .post-content img { max-width: 100%; margin-top: 10px; }
+        .post-actions { margin-top: 15px; }
+
+        /* Forms */
+        .form-container { background-color: #F7F7F7; border: 1px solid #E1E1E1; padding: 15px; margin-top: 15px; }
+        .form-container h2 { border-bottom: 1px solid #DDD; padding-bottom: 8px; }
+        .form-row { margin-bottom: 8px; }
+        .form-row label { display: block; font-weight: bold; margin-bottom: 4px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Homepage View -->
+    <div class="forum-wrapper">
+
+        <!-- ===== Homepage View (List of Sections) ===== -->
         <div id="homepage-view">
-            <h1>[Forum Homepage]</h1>
-            <p>[Select a section to begin.]</p>
+            <div class="view-header">Forum Sections</div>
             <div id="section-list">
-                <!-- Sections will be dynamically inserted here -->
+                <!-- Sections will be injected here -->
             </div>
         </div>
 
-        <!-- Section View -->
+        <!-- ===== Section View (List of Threads) ===== -->
         <div id="section-view">
-            <a href="index.html" id="back-to-home">[← Back to Homepage]</a>
-            <h1 id="section-header">[Section Title]</h1>
-            
-            <div id="new-post-form">
-                <h2>[Create a New Post]</h2>
-                <form id="post-form">
-                    <input type="text" id="author" placeholder="[Your Name]" required>
-                    <textarea id="content" rows="4" placeholder="[Write your post here...]" required></textarea>
-                    <input type="text" id="imageUrl" placeholder="[Optional: Image URL]">
-                    <button type="submit">[Submit Post]</button>
-                </form>
+            <div class="view-header"><a href="index.html">← Home</a> / <span id="section-name-header"></span></div>
+            <div id="thread-list">
+                <!-- Threads will be injected here -->
             </div>
+            <div class="content-panel">
+                <button id="show-new-thread-form-btn">Create New Thread</button>
+                <div id="new-thread-form-container" class="form-container" style="display: none;">
+                    <h2>Create a New Thread</h2>
+                    <form id="new-thread-form">
+                        <div class="form-row">
+                            <label for="thread-author">Your Name:</label>
+                            <input type="text" id="thread-author" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="thread-title">Thread Title:</label>
+                            <input type="text" id="thread-title" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="thread-content">Post Content:</label>
+                            <textarea id="thread-content" required></textarea>
+                        </div>
+                        <div class="form-row">
+                            <label for="thread-imageUrl">Image URL (Optional):</label>
+                            <input type="text" id="thread-imageUrl">
+                        </div>
+                        <button type="submit">Submit New Thread</button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-            <hr style="margin: 20px 0;">
-
-            <div id="posts-list">
-                <!-- Posts will be dynamically inserted here -->
+        <!-- ===== Thread View (List of Posts) ===== -->
+        <div id="thread-view">
+            <div class="view-header"><a href="index.html">← Home</a> / <a id="thread-back-link" href="#">Section</a> / <span id="thread-title-header"></span></div>
+            <div id="post-list">
+                <!-- Posts will be injected here -->
+            </div>
+            <div class="content-panel">
+                 <form id="reply-form" class="form-container">
+                    <h2>Post a Reply</h2>
+                    <div class="form-row">
+                        <label for="reply-author">Your Name:</label>
+                        <input type="text" id="reply-author" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="reply-content">Your Reply:</label>
+                        <textarea id="reply-content" required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <label for="reply-imageUrl">Image URL (Optional):</label>
+                        <input type="text" id="reply-imageUrl">
+                    </div>
+                    <button type="submit">Submit Reply</button>
+                </form>
             </div>
         </div>
     </div>
@@ -75,7 +139,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
 
     <script>
-        // Your Firebase configuration will go here
+        // --- Firebase Configuration ---
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_AUTH_DOMAIN",
@@ -84,196 +148,188 @@
             messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
             appId: "YOUR_APP_ID"
         };
-
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const increment = firebase.firestore.FieldValue.increment(1);
 
-        // DOM Elements
+        // --- DOM Elements ---
         const homepageView = document.getElementById('homepage-view');
         const sectionView = document.getElementById('section-view');
-        const sectionList = document.getElementById('section-list');
-        const sectionHeader = document.getElementById('section-header');
-        const postsList = document.getElementById('posts-list');
-        const postForm = document.getElementById('post-form');
-        
+        const threadView = document.getElementById('thread-view');
+
+        // --- Data Collections ---
+        // sections: { name, description }
+        // threads: { sectionId, title, author, timestamp }
+        // posts:   { threadId, author, content, imageUrl, upvotes, timestamp }
+
         // --- ROUTING ---
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             const sectionId = params.get('section');
+            const threadId = params.get('thread');
 
-            if (sectionId) {
+            if (sectionId && threadId) {
+                showThreadView(sectionId, threadId);
+            } else if (sectionId) {
                 showSectionView(sectionId);
             } else {
                 showHomepageView();
             }
         });
 
-        // --- VIEW RENDERING ---
-        async function showHomepageView() {
-            homepageView.style.display = 'block';
-            sectionView.style.display = 'none';
-
-            const sectionsSnapshot = await db.collection('sections').get();
-            sectionList.innerHTML = ''; // Clear old list
-            sectionsSnapshot.forEach(doc => {
-                const section = doc.data();
-                const sectionEl = document.createElement('div');
-                sectionEl.className = 'section-list-item';
-                sectionEl.innerHTML = `
-                    <a href="?section=${doc.id}" class="section-title">${section.name}</a>
-                    <p class="section-description">${section.description}</p>
-                `;
-                sectionList.appendChild(sectionEl);
+        // --- VIEW RENDERERS ---
+        function showHomepageView() {
+            homepageView.style.display = 'block'; sectionView.style.display = 'none'; threadView.style.display = 'none';
+            const sectionList = document.getElementById('section-list');
+            db.collection('sections').get().then(snapshot => {
+                sectionList.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const section = doc.data();
+                    sectionList.innerHTML += `
+                        <div class="row">
+                            <div class="row-main">
+                                <a href="?section=${doc.id}" style="font-weight: bold;">${section.name}</a>
+                                <div style="font-size: 11px;">${section.description}</div>
+                            </div>
+                        </div>
+                    `;
+                });
             });
         }
 
         function showSectionView(sectionId) {
-            homepageView.style.display = 'none';
-            sectionView.style.display = 'block';
-            
-            // Set section header
+            homepageView.style.display = 'none'; sectionView.style.display = 'block'; threadView.style.display = 'none';
+            const threadList = document.getElementById('thread-list');
             db.collection('sections').doc(sectionId).get().then(doc => {
-                if (doc.exists) {
-                    sectionHeader.textContent = doc.data().name;
-                } else {
-                    sectionHeader.textContent = "[Section Not Found]";
-                }
+                document.getElementById('section-name-header').textContent = doc.data().name;
             });
-
-            // Listen for posts in this section
-            db.collection('sections').doc(sectionId).collection('posts').orderBy('timestamp', 'desc')
-              .onSnapshot(snapshot => {
-                postsList.innerHTML = ''; // Clear old posts
+            db.collection('threads').where('sectionId', '==', sectionId).orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                threadList.innerHTML = `<div class="row" style="font-weight: bold; background: #EFEFEF;">
+                                            <div class="row-main">Thread</div>
+                                            <div class="row-side">Author</div>
+                                        </div>`;
                 snapshot.forEach(doc => {
-                    renderPost(doc, sectionId);
-                });
-            });
-        }
-
-        function renderPost(doc, sectionId) {
-            const post = doc.data();
-            const postId = doc.id;
-            const postEl = document.createElement('div');
-            postEl.className = 'post';
-            postEl.setAttribute('data-id', postId);
-
-            const imageTag = post.imageUrl ? `<img src="${post.imageUrl}" alt="User content">` : '';
-
-            postEl.innerHTML = `
-                <div class="post-header">[By] ${post.author}</div>
-                <div class="post-content">
-                    <p>${post.content}</p>
-                    ${imageTag}
-                </div>
-                <div class="post-actions">
-                    <button class="upvote-btn">[Upvote]</button>
-                    <span class="upvote-count">${post.upvotes || 0}</span>
-                    <button class="reply-btn">[Reply]</button>
-                </div>
-                <div class="replies-container"></div>
-                <form class="reply-form">
-                    <input type="text" class="reply-author" placeholder="[Your Name]" required>
-                    <textarea class="reply-content" rows="2" placeholder="[Write your reply...]" required></textarea>
-                    <input type="text" class="reply-imageUrl" placeholder="[Optional: Image URL]">
-                    <button type="submit">[Submit Reply]</button>
-                </form>
-            `;
-            postsList.appendChild(postEl);
-
-            // Fetch and render replies for this post
-            renderReplies(sectionId, postId);
-        }
-
-        function renderReplies(sectionId, postId) {
-            const repliesContainer = document.querySelector(`.post[data-id="${postId}"] .replies-container`);
-            db.collection('sections').doc(sectionId).collection('posts').doc(postId).collection('replies').orderBy('timestamp', 'asc')
-              .onSnapshot(snapshot => {
-                repliesContainer.innerHTML = ''; // Clear old replies
-                snapshot.forEach(doc => {
-                    const reply = doc.data();
-                    const replyEl = document.createElement('div');
-                    replyEl.className = 'reply';
-                    const imageTag = reply.imageUrl ? `<img src="${reply.imageUrl}" alt="User content">` : '';
-                    replyEl.innerHTML = `
-                        <p><strong>${reply.author}:</strong> ${reply.content}</p>
-                        ${imageTag}
+                    const thread = doc.data();
+                    threadList.innerHTML += `
+                        <div class="row">
+                            <div class="row-main"><a href="?section=${sectionId}&thread=${doc.id}">${thread.title}</a></div>
+                            <div class="row-side">${thread.author}</div>
+                        </div>
                     `;
-                    repliesContainer.appendChild(replyEl);
                 });
             });
         }
 
+        function showThreadView(sectionId, threadId) {
+            homepageView.style.display = 'none'; sectionView.style.display = 'none'; threadView.style.display = 'block';
+            const postList = document.getElementById('post-list');
+            // Set header links and titles
+            db.collection('sections').doc(sectionId).get().then(doc => {
+                const backLink = document.getElementById('thread-back-link');
+                backLink.href = `?section=${sectionId}`;
+                backLink.textContent = doc.data().name;
+            });
+            db.collection('threads').doc(threadId).get().then(doc => {
+                document.getElementById('thread-title-header').textContent = doc.data().title;
+            });
+
+            // Listen for posts in this thread
+            db.collection('posts').where('threadId', '==', threadId).orderBy('timestamp', 'asc').onSnapshot(snapshot => {
+                postList.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const post = doc.data();
+                    const postId = doc.id;
+                    const imageTag = post.imageUrl ? `<img src="${post.imageUrl}" alt="User content">` : '';
+                    const postDate = post.timestamp ? post.timestamp.toDate().toLocaleString() : '...';
+                    postList.innerHTML += `
+                        <div class="post-container" data-id="${postId}">
+                            <div class="post-author">
+                                <div class="author-name">${post.author}</div>
+                            </div>
+                            <div class="post-body">
+                                <div class="post-meta">Posted on: ${postDate}</div>
+                                <div class="post-content">
+                                    <p>${post.content.replace(/\n/g, '<br>')}</p>
+                                    ${imageTag}
+                                </div>
+                                <div class="post-actions">
+                                    <button class="upvote-btn">Upvote</button>
+                                    <span>${post.upvotes || 0}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
 
         // --- EVENT LISTENERS ---
 
-        // Handle new post form submission
-        postForm.addEventListener('submit', e => {
+        // Show "New Thread" form
+        document.getElementById('show-new-thread-form-btn').addEventListener('click', e => {
+            const form = document.getElementById('new-thread-form-container');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        });
+
+        // Handle "New Thread" submission
+        document.getElementById('new-thread-form').addEventListener('submit', async e => {
             e.preventDefault();
             const sectionId = new URLSearchParams(window.location.search).get('section');
-            if (!sectionId) return;
+            const author = document.getElementById('thread-author').value;
+            const title = document.getElementById('thread-title').value;
+            const content = document.getElementById('thread-content').value;
+            const imageUrl = document.getElementById('thread-imageUrl').value;
+            
+            // 1. Create the thread document
+            const threadRef = await db.collection('threads').add({
+                sectionId: sectionId,
+                title: title,
+                author: author,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
 
-            const author = document.getElementById('author').value;
-            const content = document.getElementById('content').value;
-            const imageUrl = document.getElementById('imageUrl').value;
+            // 2. Create the first post in that thread
+            await db.collection('posts').add({
+                threadId: threadRef.id,
+                author: author,
+                content: content,
+                imageUrl: imageUrl || null,
+                upvotes: 0,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
 
-            db.collection('sections').doc(sectionId).collection('posts').add({
+            // 3. Redirect to the new thread
+            window.location.href = `?section=${sectionId}&thread=${threadRef.id}`;
+        });
+
+        // Handle "Reply" submission
+        document.getElementById('reply-form').addEventListener('submit', e => {
+            e.preventDefault();
+            const threadId = new URLSearchParams(window.location.search).get('thread');
+            const author = document.getElementById('reply-author').value;
+            const content = document.getElementById('reply-content').value;
+            const imageUrl = document.getElementById('reply-imageUrl').value;
+            
+            db.collection('posts').add({
+                threadId: threadId,
                 author: author,
                 content: content,
                 imageUrl: imageUrl || null,
                 upvotes: 0,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
-                postForm.reset();
-            }).catch(err => console.error("Error adding post: ", err));
+                document.getElementById('reply-form').reset();
+            });
         });
 
-        // Handle clicks on the posts list for upvotes and replies
-        postsList.addEventListener('click', e => {
-            const target = e.target;
-            const postEl = target.closest('.post');
-            if (!postEl) return;
-            const postId = postEl.dataset.id;
-            const sectionId = new URLSearchParams(window.location.search).get('section');
-            
-            // Upvote button clicked
-            if (target.classList.contains('upvote-btn')) {
-                const postRef = db.collection('sections').doc(sectionId).collection('posts').doc(postId);
-                postRef.update({ upvotes: increment });
-            }
-
-            // Reply button clicked
-            if (target.classList.contains('reply-btn')) {
-                const replyForm = postEl.querySelector('.reply-form');
-                replyForm.style.display = replyForm.style.display === 'block' ? 'none' : 'block';
+        // Handle upvotes using event delegation
+        document.getElementById('post-list').addEventListener('click', e => {
+            if (e.target.classList.contains('upvote-btn')) {
+                const postEl = e.target.closest('.post-container');
+                const postId = postEl.dataset.id;
+                db.collection('posts').doc(postId).update({ upvotes: increment });
             }
         });
-
-        // Handle reply form submissions (using event delegation)
-        postsList.addEventListener('submit', e => {
-            e.preventDefault();
-            if (!e.target.classList.contains('reply-form')) return;
-            
-            const postEl = e.target.closest('.post');
-            const postId = postEl.dataset.id;
-            const sectionId = new URLSearchParams(window.location.search).get('section');
-
-            const author = e.target.querySelector('.reply-author').value;
-            const content = e.target.querySelector('.reply-content').value;
-            const imageUrl = e.target.querySelector('.reply-imageUrl').value;
-
-            db.collection('sections').doc(sectionId).collection('posts').doc(postId).collection('replies').add({
-                author: author,
-                content: content,
-                imageUrl: imageUrl || null,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                e.target.reset();
-                e.target.style.display = 'none';
-            }).catch(err => console.error("Error adding reply: ", err));
-        });
-
     </script>
 </body>
 </html>
