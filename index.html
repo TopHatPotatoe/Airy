@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[Forum Title]</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; padding: 20px; }
+        a { color: #1877f2; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        button { cursor: pointer; background-color: #e4e6eb; border: none; padding: 8px 12px; border-radius: 6px; }
+        button:hover { background-color: #d8dbdf; }
+        input, textarea { width: 100%; box-sizing: border-box; margin-bottom: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; background-color: #fff; border: 1px solid #dddfe2; border-radius: 8px; }
+        
+        /* Views */
+        #homepage-view, #section-view { display: none; }
+        
+        /* Homepage */
+        .section-list-item { padding: 15px; border-bottom: 1px solid #ddd; }
+        .section-list-item:last-child { border-bottom: none; }
+        .section-title { font-size: 1.2em; font-weight: bold; }
+        .section-description { color: #606770; }
+
+        /* Section View */
+        .post { border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; background-color: #f9f9f9; }
+        .post-header { font-weight: bold; color: #333; margin-bottom: 10px; }
+        .post-content img { max-width: 100%; border-radius: 4px; margin-top: 10px; }
+        .post-actions { margin-top: 10px; display: flex; align-items: center; gap: 15px; }
+        .upvote-btn { background-color: #e7f3ff; color: #1877f2; }
+
+        /* Replies */
+        .replies-container { border-left: 3px solid #e0e0e0; margin-top: 15px; padding-left: 15px; }
+        .reply { background-color: #fff; border: 1px solid #eee; padding: 10px; margin-top: 10px; border-radius: 6px; }
+        .reply-form { display: none; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Homepage View -->
+        <div id="homepage-view">
+            <h1>[Forum Homepage]</h1>
+            <p>[Select a section to begin.]</p>
+            <div id="section-list">
+                <!-- Sections will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Section View -->
+        <div id="section-view">
+            <a href="index.html" id="back-to-home">[← Back to Homepage]</a>
+            <h1 id="section-header">[Section Title]</h1>
+            
+            <div id="new-post-form">
+                <h2>[Create a New Post]</h2>
+                <form id="post-form">
+                    <input type="text" id="author" placeholder="[Your Name]" required>
+                    <textarea id="content" rows="4" placeholder="[Write your post here...]" required></textarea>
+                    <input type="text" id="imageUrl" placeholder="[Optional: Image URL]">
+                    <button type="submit">[Submit Post]</button>
+                </form>
+            </div>
+
+            <hr style="margin: 20px 0;">
+
+            <div id="posts-list">
+                <!-- Posts will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+
+    <script>
+        // Your Firebase configuration will go here
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const increment = firebase.firestore.FieldValue.increment(1);
+
+        // DOM Elements
+        const homepageView = document.getElementById('homepage-view');
+        const sectionView = document.getElementById('section-view');
+        const sectionList = document.getElementById('section-list');
+        const sectionHeader = document.getElementById('section-header');
+        const postsList = document.getElementById('posts-list');
+        const postForm = document.getElementById('post-form');
+        
+        // --- ROUTING ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const sectionId = params.get('section');
+
+            if (sectionId) {
+                showSectionView(sectionId);
+            } else {
+                showHomepageView();
+            }
+        });
+
+        // --- VIEW RENDERING ---
+        async function showHomepageView() {
+            homepageView.style.display = 'block';
+            sectionView.style.display = 'none';
+
+            const sectionsSnapshot = await db.collection('sections').get();
+            sectionList.innerHTML = ''; // Clear old list
+            sectionsSnapshot.forEach(doc => {
+                const section = doc.data();
+                const sectionEl = document.createElement('div');
+                sectionEl.className = 'section-list-item';
+                sectionEl.innerHTML = `
+                    <a href="?section=${doc.id}" class="section-title">${section.name}</a>
+                    <p class="section-description">${section.description}</p>
+                `;
+                sectionList.appendChild(sectionEl);
+            });
+        }
+
+        function showSectionView(sectionId) {
+            homepageView.style.display = 'none';
+            sectionView.style.display = 'block';
+            
+            // Set section header
+            db.collection('sections').doc(sectionId).get().then(doc => {
+                if (doc.exists) {
+                    sectionHeader.textContent = doc.data().name;
+                } else {
+                    sectionHeader.textContent = "[Section Not Found]";
+                }
+            });
+
+            // Listen for posts in this section
+            db.collection('sections').doc(sectionId).collection('posts').orderBy('timestamp', 'desc')
+              .onSnapshot(snapshot => {
+                postsList.innerHTML = ''; // Clear old posts
+                snapshot.forEach(doc => {
+                    renderPost(doc, sectionId);
+                });
+            });
+        }
+
+        function renderPost(doc, sectionId) {
+            const post = doc.data();
+            const postId = doc.id;
+            const postEl = document.createElement('div');
+            postEl.className = 'post';
+            postEl.setAttribute('data-id', postId);
+
+            const imageTag = post.imageUrl ? `<img src="${post.imageUrl}" alt="User content">` : '';
+
+            postEl.innerHTML = `
+                <div class="post-header">[By] ${post.author}</div>
+                <div class="post-content">
+                    <p>${post.content}</p>
+                    ${imageTag}
+                </div>
+                <div class="post-actions">
+                    <button class="upvote-btn">[Upvote]</button>
+                    <span class="upvote-count">${post.upvotes || 0}</span>
+                    <button class="reply-btn">[Reply]</button>
+                </div>
+                <div class="replies-container"></div>
+                <form class="reply-form">
+                    <input type="text" class="reply-author" placeholder="[Your Name]" required>
+                    <textarea class="reply-content" rows="2" placeholder="[Write your reply...]" required></textarea>
+                    <input type="text" class="reply-imageUrl" placeholder="[Optional: Image URL]">
+                    <button type="submit">[Submit Reply]</button>
+                </form>
+            `;
+            postsList.appendChild(postEl);
+
+            // Fetch and render replies for this post
+            renderReplies(sectionId, postId);
+        }
+
+        function renderReplies(sectionId, postId) {
+            const repliesContainer = document.querySelector(`.post[data-id="${postId}"] .replies-container`);
+            db.collection('sections').doc(sectionId).collection('posts').doc(postId).collection('replies').orderBy('timestamp', 'asc')
+              .onSnapshot(snapshot => {
+                repliesContainer.innerHTML = ''; // Clear old replies
+                snapshot.forEach(doc => {
+                    const reply = doc.data();
+                    const replyEl = document.createElement('div');
+                    replyEl.className = 'reply';
+                    const imageTag = reply.imageUrl ? `<img src="${reply.imageUrl}" alt="User content">` : '';
+                    replyEl.innerHTML = `
+                        <p><strong>${reply.author}:</strong> ${reply.content}</p>
+                        ${imageTag}
+                    `;
+                    repliesContainer.appendChild(replyEl);
+                });
+            });
+        }
+
+
+        // --- EVENT LISTENERS ---
+
+        // Handle new post form submission
+        postForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const sectionId = new URLSearchParams(window.location.search).get('section');
+            if (!sectionId) return;
+
+            const author = document.getElementById('author').value;
+            const content = document.getElementById('content').value;
+            const imageUrl = document.getElementById('imageUrl').value;
+
+            db.collection('sections').doc(sectionId).collection('posts').add({
+                author: author,
+                content: content,
+                imageUrl: imageUrl || null,
+                upvotes: 0,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                postForm.reset();
+            }).catch(err => console.error("Error adding post: ", err));
+        });
+
+        // Handle clicks on the posts list for upvotes and replies
+        postsList.addEventListener('click', e => {
+            const target = e.target;
+            const postEl = target.closest('.post');
+            if (!postEl) return;
+            const postId = postEl.dataset.id;
+            const sectionId = new URLSearchParams(window.location.search).get('section');
+            
+            // Upvote button clicked
+            if (target.classList.contains('upvote-btn')) {
+                const postRef = db.collection('sections').doc(sectionId).collection('posts').doc(postId);
+                postRef.update({ upvotes: increment });
+            }
+
+            // Reply button clicked
+            if (target.classList.contains('reply-btn')) {
+                const replyForm = postEl.querySelector('.reply-form');
+                replyForm.style.display = replyForm.style.display === 'block' ? 'none' : 'block';
+            }
+        });
+
+        // Handle reply form submissions (using event delegation)
+        postsList.addEventListener('submit', e => {
+            e.preventDefault();
+            if (!e.target.classList.contains('reply-form')) return;
+            
+            const postEl = e.target.closest('.post');
+            const postId = postEl.dataset.id;
+            const sectionId = new URLSearchParams(window.location.search).get('section');
+
+            const author = e.target.querySelector('.reply-author').value;
+            const content = e.target.querySelector('.reply-content').value;
+            const imageUrl = e.target.querySelector('.reply-imageUrl').value;
+
+            db.collection('sections').doc(sectionId).collection('posts').doc(postId).collection('replies').add({
+                author: author,
+                content: content,
+                imageUrl: imageUrl || null,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                e.target.reset();
+                e.target.style.display = 'none';
+            }).catch(err => console.error("Error adding reply: ", err));
+        });
+
+    </script>
+</body>
+</html>
