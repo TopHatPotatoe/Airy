@@ -3,463 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>[Forum Title]</title>
+    <title>Airy Forum</title>
     <style>
-        /* --- BARE-BONES STYLING --- */
-        body {
-            font-family: Verdana, Arial, Helvetica, sans-serif;
-            font-size: 13px;
-            background-color: #FFF;
-            color: #000;
-            margin: 0;
-            padding: 10px;
+        :root {
+            /* Light Theme (Default) */
+            --bg-color: #f4f4f4;
+            --text-color: #333;
+            --secondary-text-color: #666;
+            --card-bg-color: #fff;
+            --reply-bg-color: #f8f9fa;
+            --border-color: #ddd;
+            --primary-color: #007bff;
+            --primary-hover-color: #0056b3;
+            --secondary-color: #6c757d;
+            --secondary-hover-color: #5a6268;
+            --danger-color: #dc3545;
+            --danger-hover-color: #c82333;
+            --link-color: #007bff;
+            --header-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --body-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            --box-shadow-hover: 0 4px 10px rgba(0,0,0,0.1);
         }
-        a { color: #004488; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        h1, h2 { font-size: 18px; margin: 0 0 10px 0; padding: 0; border-bottom: 1px solid #CCC; padding-bottom: 5px;}
-        hr { border: 0; border-top: 1px solid #CCC; }
-        input, textarea, button { font-family: inherit; font-size: inherit; margin: 0; }
-        input[type="text"], input[type="email"], input[type="password"], input[type="search"], textarea { padding: 5px; border: 1px solid #999; }
-        textarea { width: 400px; height: 120px; }
-        button { background-color: #EFEFEF; border: 1px solid #CCC; padding: 4px 8px; cursor: pointer; }
-        button:disabled { background-color: #F8F8F8; color: #999; cursor: not-allowed; }
 
-        /* Main structure */
-        .container { max-width: 960px; margin: 0 auto; border: 1px solid #C0C0C0; }
-        .view { display: none; } /* Hide views by default */
+        body[data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --secondary-text-color: #b0b0b0;
+            --card-bg-color: #1e1e1e;
+            --reply-bg-color: #2a2a2a;
+            --border-color: #333;
+            --primary-color: #bb86fc;
+            --primary-hover-color: #a764fc;
+            --secondary-color: #4f4f4f;
+            --secondary-hover-color: #616161;
+            --danger-color: #cf6679;
+            --danger-hover-color: #d47f8e;
+            --link-color: #bb86fc;
+        }
         
-        /* Headers & Navigation */
-        .top-bar { padding: 8px 10px; background: #EFEFEF; border-bottom: 1px solid #C0C0C0; display: flex; justify-content: space-between; align-items: center; }
-        #main-nav a { font-weight: bold; margin-right: 20px; }
-        .view-header { background-color: #004488; color: #FFF; padding: 8px; font-weight: bold; }
-        .view-header a { color: #FFF; }
-        .search-container { padding: 10px; border-bottom: 1px solid #C0C0C0; }
-        
-        /* Table-like row styling */
-        .list-header { display: flex; padding: 8px; font-weight: bold; background: #EFEFEF; border-bottom: 1px solid #E1E1E1; }
-        .list-row { display: flex; padding: 8px; border-bottom: 1px solid #E1E1E1; align-items: center; }
-        .list-row:nth-child(even) { background-color: #F7F7F7; }
-        .list-row-main { flex-grow: 1; }
-        .list-row-main .title { font-weight: bold; font-size: 14px; }
-        .list-row-side { width: 80px; text-align: center; font-size: 12px; color: #333; }
-        .list-row-side-wide { width: 150px; text-align: center; font-size: 12px; color: #333; }
-        
-        /* Post Styling */
-        .post-container { display: flex; border-top: 1px solid #C0C0C0; padding: 10px 0; }
-        .post-author { width: 150px; padding: 0 10px; text-align: center; flex-shrink: 0; }
-        .post-author .author-name { font-weight: bold; }
-        .post-author .author-email { font-size: 11px; color: #666; word-break: break-all; }
-        .post-body { flex-grow: 1; padding: 0 10px; }
-        .post-meta { font-size: 11px; color: #666; border-bottom: 1px solid #E1E1E1; padding-bottom: 8px; margin-bottom: 8px; }
-        .post-content img { max-width: 100%; margin-top: 10px; }
+        body[data-theme="retro"] {
+            --bg-color: #c0c0c0;
+            --text-color: #000;
+            --secondary-text-color: #000;
+            --card-bg-color: #fff;
+            --reply-bg-color: #f0f0f0;
+            --border-color: #000;
+            --primary-color: #000;
+            --primary-hover-color: #333;
+            --secondary-color: #a0a0a0;
+            --secondary-hover-color: #888;
+            --danger-color: #000;
+            --danger-hover-color: #333;
+            --link-color: #000;
+            --header-font: 'Courier New', Courier, monospace;
+            --body-font: 'Courier New', Courier, monospace;
+            --border-radius: 0;
+            --box-shadow: none;
+            --box-shadow-hover: none;
+        }
 
-        /* Voting UI */
-        .vote-actions { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
-        .vote-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: #777; padding: 0; }
-        .vote-btn.voted-up { color: #004488; }
-        .vote-btn.voted-down { color: #C00; }
-        .vote-score { font-size: 14px; font-weight: bold; }
+        /* --- General Styles --- */
+        body { background-color: var(--bg-color); font-family: var(--body-font); color: var(--text-color); margin: 0; line-height: 1.6; }
+        h1, h2, h3, h4 { font-family: var(--header-font); }
+        .container { max-width: 90%; margin: 20px auto; padding: 20px; }
+        .hidden { display: none !important; }
 
-        /* Forms */
-        .form-container { background-color: #F7F7F7; border: 1px solid #E1E1E1; padding: 15px; margin-top: 15px; }
-        .form-row { margin-bottom: 8px; }
-        .form-row label { display: block; font-weight: bold; margin-bottom: 4px; }
-        .auth-error { color: #C00; font-weight: bold; margin-top: 10px; }
+        /* --- Components --- */
+        #auth-container { max-width: 400px; margin: 40px auto; padding: 20px; background: var(--card-bg-color); border-radius: var(--border-radius); box-shadow: var(--box-shadow); }
+        .auth-form h2 { text-align: center; margin-bottom: 20px; }
+        input[type="email"], input[type="password"], input[type="text"], textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: var(--border-radius); box-sizing: border-box; font-family: inherit; background-color: var(--card-bg-color); color: var(--text-color); }
+        textarea { resize: vertical; min-height: 100px; }
+        button { width: 100%; padding: 12px; border: none; border-radius: var(--border-radius); background-color: var(--primary-color); color: var(--card-bg-color); cursor: pointer; font-family: inherit; font-size: 16px; }
+        button:hover { background-color: var(--primary-hover-color); }
+        #user-status { text-align: right; padding: 10px 0; }
+        .user-actions button { background: transparent; color: var(--link-color); width: auto; padding: 0; font-size: 1em; margin-left: 15px; }
+        
+        .thread-item { background: var(--card-bg-color); padding: 20px; margin-bottom: 10px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
+        .thread-item:hover { transform: translateY(-3px); box-shadow: var(--box-shadow-hover); }
+        .thread-title { font-size: 1.2em; font-weight: 500; color: var(--text-color); }
+        .thread-author { font-size: 0.9em; color: var(--secondary-text-color); white-space: nowrap; padding-left: 20px; }
+        
+        .back-button { width: auto; padding: 8px 16px; font-size: 14px; background-color: var(--secondary-color); margin-bottom: 20px; }
+        .back-button:hover { background-color: var(--secondary-hover-color); }
+        .original-post { background: var(--card-bg-color); padding: 25px; margin-bottom: 20px; border-radius: var(--border-radius); }
+        #op-title { margin-top: 0; }
+        .original-post .username, .reply .username { font-weight: bold; margin-bottom: 8px; color: var(--link-color); }
+        .original-post .content, .reply .content { white-space: pre-wrap; }
+        .replies-container { margin-top: 20px; }
+        .reply { padding: 15px; margin-bottom: 10px; background-color: var(--reply-bg-color); border-radius: var(--border-radius); }
+        .reply-form, .create-post-area { margin-top: 30px; border-top: 2px solid var(--border-color); padding-top: 20px; }
+        #new-thread-form { padding: 20px; background-color: var(--card-bg-color); border-radius: var(--border-radius); margin-top: 20px; }
+        #cancel-post-button { background-color: var(--secondary-color); margin-top: 10px;}
+        #cancel-post-button:hover { background-color: var(--secondary-hover-color); }
+
+        #settings-view h2 { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        #clear-all-posts-button { background-color: var(--danger-color); }
+        #clear-all-posts-button:hover { background-color: var(--danger-hover-color); }
+        .theme-buttons { display: flex; gap: 10px; margin-top: 10px; }
+        .theme-buttons button { width: auto; flex-grow: 1; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="top-bar">
-            <div id="main-nav">
-                <a href="#" data-view="homepage-view">Hot Threads (Home)</a>
-                <a href="#" data-view="sections-list-view">Forum Sections</a>
-            </div>
-            <div id="auth-bar"></div>
+        <div id="user-status" class="hidden">
+            Logged in as: <strong id="user-username"></strong>
+            <span class="user-actions">
+                <button id="settings-button">Settings</button>
+                <button id="logout-button">Logout</button>
+            </span>
         </div>
-        <div class="search-container">
-            <input type="search" id="search-input" placeholder="Search for threads...">
-            <button id="search-btn">Search</button>
+        <h1>Airy Forum</h1>
+
+        <!-- AUTHENTICATION -->
+        <div id="auth-container">
+            <div id="login-form" class="auth-form"><h2>Login</h2><input type="email" id="login-email" placeholder="Email"><input type="password" id="login-password" placeholder="Password"><button id="login-button">Login</button></div>
+            <div id="signup-form" class="auth-form"><h2>Sign Up</h2><input type="text" id="signup-username" placeholder="Username (public)"><input type="email" id="signup-email" placeholder="Email (private)"><input type="password" id="signup-password" placeholder="Password"><button id="signup-button">Sign Up</button></div>
         </div>
 
-        <!-- Views will be dynamically populated here -->
-        <div id="homepage-view" class="view"></div>
-        <div id="sections-list-view" class="view"></div>
-        <div id="section-view" class="view"></div>
-        <div id="thread-view" class="view"></div>
-        <div id="login-view" class="view"></div>
-        <div id="search-results-view" class="view"></div>
+        <!-- VIEW 1: THREAD LIST -->
+        <div id="thread-list-view" class="hidden">
+            <div id="thread-list-container"></div>
+            <div class="create-post-area">
+                <button id="show-create-form-button">Create a New Thread</button>
+                <div id="new-thread-form" class="hidden">
+                    <h2>Create New Thread</h2>
+                    <input type="text" id="new-thread-title" placeholder="Thread Title">
+                    <textarea id="new-thread-content" placeholder="Write the main content for your thread..."></textarea>
+                    <button id="new-thread-button">Post</button>
+                    <button id="cancel-post-button">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: SINGLE THREAD -->
+        <div id="single-thread-view" class="hidden">
+            <button class="back-button">← All Threads</button>
+            <div id="original-post-container"></div>
+            <h3>Replies</h3>
+            <div id="replies-container"></div>
+            <div class="reply-form">
+                <h4>Post a Reply</h4>
+                <textarea id="reply-content" placeholder="Write your reply..."></textarea>
+                <button id="submit-reply-button">Submit Reply</button>
+            </div>
+        </div>
+
+        <!-- VIEW 3: SETTINGS -->
+        <div id="settings-view" class="hidden">
+            <button class="back-button">← All Threads</button>
+            <h2>Settings</h2>
+            <div class="setting-item">
+                <h3>Theme</h3>
+                <div class="theme-buttons">
+                    <button data-theme="light">Light</button>
+                    <button data-theme="dark">Dark</button>
+                    <button data-theme="retro">Retro</button>
+                </div>
+            </div>
+            <hr>
+            <div class="setting-item" style="display:none;">
+                <h3>Locked</h3>
+                <p>This action is permanent and cannot be undone.</p>
+                <button id="clear-all-posts-button">Clear All Posts & Replies</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+    <!-- TEMPLATES -->
+    <template id="thread-item-template"><div class="thread-item"><div class="thread-title"></div><div class="thread-author"></div></div></template>
+    <template id="original-post-template"><div class="original-post"><h2 id="op-title"></h2><p>by <strong class="username"></strong></p><hr><div class="content"></div></div></template>
+    <template id="reply-template"><div class="reply"><div class="username"></div><div class="content"></div></div></template>
+
+    <!-- FIREBASE SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <script>
-        // --- Firebase Configuration ---
+        // --- THEME LOADER (Runs immediately) ---
+        (function() {
+            const savedTheme = localStorage.getItem('forum-theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+        })();
+
+        // --- FIREBASE CONFIG & INIT ---
         // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyBUCkP-QMScZsXRSYtzzXscL-xi3eLjWIU",
-  authDomain: "airy-forum.firebaseapp.com",
-  projectId: "airy-forum",
-  storageBucket: "airy-forum.firebasestorage.app",
-  messagingSenderId: "1045870232743",
-  appId: "1:1045870232743:web:3912220d3a935a447a8782",
-  measurementId: "G-M6TZ7NYW2K"
+  apiKey: "AIzaSyBX5uF_OV6UB-hVzBTaH2yLlhtzFhRmpXY",
+  authDomain: "airy-forumv2.firebaseapp.com",
+  projectId: "airy-forumv2",
+  storageBucket: "airy-forumv2.firebasestorage.app",
+  messagingSenderId: "541535481676",
+  appId: "1:541535481676:web:7aead57267428ed81d69e9",
+  measurementId: "G-P8WTYS16L0"
 };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
         const auth = firebase.auth();
-        const increment = (val) => firebase.firestore.FieldValue.increment(val);
+        const db = firebase.firestore();
+        const postsCollection = db.collection("posts");
+        const usersCollection = db.collection("users");
 
-        // --- DOM Elements ---
-        const allViews = document.querySelectorAll('.view');
-        const authBar = document.getElementById('auth-bar');
-        const mainNav = document.getElementById('main-nav');
+        // --- GLOBAL VARS & DOM REFS ---
+        let currentUserProfile = null;
+        let currentThreadId = null;
+        let repliesListener = null;
 
-        // =================================================================
-        // --- INITIALIZATION & AUTHENTICATION ---
-        // =================================================================
-
-        async function initializeDefaultSections() {
-            const sectionsRef = db.collection('sections');
-            const snapshot = await sectionsRef.get();
-            if (snapshot.empty) {
-                console.log("No sections found. Creating default sections...");
-                const batch = db.batch();
-                const defaultSections = [
-                    { name: "[General Discussion]", description: "[Talk about anything here.]" },
-                    { name: "[Introductions]", description: "[New here? Say hello!]" }
-                ];
-                defaultSections.forEach(section => {
-                    batch.set(sectionsRef.doc(), section);
-                });
-                await batch.commit();
-            }
+        const authContainer = document.getElementById('auth-container');
+        const userStatus = document.getElementById('user-status');
+        const userUsernameSpan = document.getElementById('user-username');
+        const threadListView = document.getElementById('thread-list-view');
+        const singleThreadView = document.getElementById('single-thread-view');
+        const settingsView = document.getElementById('settings-view');
+        const threadListContainer = document.getElementById('thread-list-container');
+        const originalPostContainer = document.getElementById('original-post-container');
+        const repliesContainer = document.getElementById('replies-container');
+        const showCreateFormButton = document.getElementById('show-create-form-button');
+        const newThreadForm = document.getElementById('new-thread-form');
+        
+        // --- VIEW MANAGEMENT ---
+        function hideAllViews() {
+            threadListView.classList.add('hidden');
+            singleThreadView.classList.add('hidden');
+            settingsView.classList.add('hidden');
+        }
+        function showThreadListView() {
+            hideAllViews();
+            threadListView.classList.remove('hidden');
+            newThreadForm.classList.add('hidden');
+            showCreateFormButton.classList.remove('hidden');
+            currentThreadId = null;
+            if (repliesListener) repliesListener();
+        }
+        function showSingleThreadView(threadId) {
+            hideAllViews();
+            singleThreadView.classList.remove('hidden');
+            currentThreadId = threadId;
+            loadSingleThread(threadId);
+        }
+        function showSettingsView() {
+            hideAllViews();
+            settingsView.classList.remove('hidden');
         }
 
-        auth.onAuthStateChanged(user => {
-            document.body.dataset.userId = user ? user.uid : '';
+        // --- AUTHENTICATION & USER STATE ---
+        document.getElementById('signup-button').addEventListener('click', async () => { 
+            const email = document.getElementById('signup-email').value; const password = document.getElementById('signup-password').value; const username = document.getElementById('signup-username').value.trim();
+            if (!username) return alert('Please enter a username.');
+            const usernameDoc = await usersCollection.where("username", "==", username).get();
+            if (!usernameDoc.empty) return alert('This username is already taken.');
+            try { const cred = await auth.createUserWithEmailAndPassword(email, password); await usersCollection.doc(cred.user.uid).set({ username: username }); } catch (error) { alert(error.message); }
+        });
+        document.getElementById('login-button').addEventListener('click', () => { const email = document.getElementById('login-email').value; const password = document.getElementById('login-password').value; auth.signInWithEmailAndPassword(email, password).catch(error => alert(error.message)); });
+        document.getElementById('logout-button').addEventListener('click', () => auth.signOut());
+        document.getElementById('settings-button').addEventListener('click', showSettingsView);
+        auth.onAuthStateChanged(async (user) => {
             if (user) {
-                authBar.innerHTML = `<span>${user.email} | </span><a id="logout-link" href="#">Logout</a>`;
+                const userDoc = await usersCollection.doc(user.uid).get();
+                currentUserProfile = userDoc.data();
+                userUsernameSpan.textContent = currentUserProfile.username;
+                userStatus.classList.remove('hidden');
+                authContainer.classList.add('hidden');
+                loadAllThreads();
+                showThreadListView();
             } else {
-                authBar.innerHTML = `<a id="login-link" href="#">Login / Sign Up</a>`;
-            }
-            route();
-        });
-        
-        authBar.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (e.target.id === 'login-link') showView('login-view');
-            if (e.target.id === 'logout-link') auth.signOut();
-        });
-
-        mainNav.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (e.target.dataset.view) {
-                showView(e.target.dataset.view);
+                currentUserProfile = null;
+                userStatus.classList.add('hidden');
+                authContainer.classList.remove('hidden');
+                hideAllViews();
             }
         });
 
-        // =================================================================
-        // --- ROUTING / VIEW MANAGEMENT ---
-        // =================================================================
-        
-        document.addEventListener('DOMContentLoaded', async () => {
-            await initializeDefaultSections();
-            document.getElementById('search-btn').addEventListener('click', () => {
-                const query = document.getElementById('search-input').value;
-                if (query) showView('search-results-view', { query });
-            });
-            window.addEventListener('popstate', route);
-        });
-
-        function route() {
-            const params = new URLSearchParams(window.location.search);
-            if (params.has('search')) showView('search-results-view', { query: params.get('search') });
-            else if (params.has('thread')) showView('thread-view', { sectionId: params.get('section'), threadId: params.get('thread') });
-            else if (params.has('section')) showView('section-view', { sectionId: params.get('section') });
-            else showView('homepage-view');
-        }
-
-        function showView(viewId, params = {}) {
-            allViews.forEach(v => v.style.display = 'none');
-            const view = document.getElementById(viewId);
-            view.style.display = 'block';
-            
-            const newUrl = new URL(window.location);
-            newUrl.search = '';
-
-            switch (viewId) {
-                case 'homepage-view': renderHomepage(); break;
-                case 'sections-list-view': renderSectionsList(); break;
-                case 'login-view': renderLogin(); break;
-                case 'section-view': 
-                    renderSection(params.sectionId);
-                    newUrl.searchParams.set('section', params.sectionId);
-                    break;
-                case 'thread-view':
-                    renderThread(params.sectionId, params.threadId);
-                    newUrl.searchParams.set('section', params.sectionId);
-                    newUrl.searchParams.set('thread', params.threadId);
-                    break;
-                case 'search-results-view':
-                    renderSearchResults(params.query);
-                    newUrl.searchParams.set('search', params.query);
-                    break;
-            }
-            if (window.location.href !== newUrl.href) {
-                window.history.pushState({viewId, params}, '', newUrl.href);
-            }
-        }
-
-        // =================================================================
-        // --- RENDER FUNCTIONS (Injecting HTML into views) ---
-        // =================================================================
-
-        function renderHomepage() {
-            const view = document.getElementById('homepage-view');
-            view.innerHTML = `<div class="view-header">Hot Threads</div><div id="hot-threads-list">Loading...</div>`;
-            db.collection('threads').orderBy('hot_score', 'desc').limit(20).get().then(snapshot => {
-                document.getElementById('hot-threads-list').innerHTML = createThreadListHTML(snapshot);
-            });
-        }
-
-        function renderSectionsList() {
-            const view = document.getElementById('sections-list-view');
-            view.innerHTML = `<div class="view-header">Forum Sections</div><div id="sections-list-content"></div>`;
-            db.collection('sections').get().then(snapshot => {
-                let html = '';
+        // --- FORUM LOGIC (No major changes) ---
+        function loadAllThreads() { /* ... no changes ... */
+            postsCollection.orderBy("timestamp", "desc").onSnapshot(snapshot => {
+                threadListContainer.innerHTML = "";
                 snapshot.forEach(doc => {
-                    const section = doc.data();
-                    html += `<div class="list-row">
-                                <div class="list-row-main">
-                                    <a class="title" href="#" onclick="showView('section-view', {sectionId: '${doc.id}'})">${section.name}</a>
-                                    <div>${section.description}</div>
-                                </div>
-                            </div>`;
-                });
-                document.getElementById('sections-list-content').innerHTML = html;
-            });
-        }
-        
-        function renderSection(sectionId) {
-            const view = document.getElementById('section-view');
-            db.collection('sections').doc(sectionId).get().then(doc => {
-                const sectionName = doc.exists ? doc.data().name : '[Unknown Section]';
-                const createThreadForm = auth.currentUser ? `
-                    <div id="new-thread-form-container" class="form-container">
-                        <h2>Create a New Thread</h2>
-                        <form id="new-thread-form">
-                            <div class="form-row"><label for="thread-title">Thread Title:</label><input type="text" id="thread-title" required></div>
-                            <div class="form-row"><label for="thread-content">Post Content:</label><textarea id="thread-content" required></textarea></div>
-                            <div class="form-row"><label for="thread-imageUrl">Image URL (Optional):</label><input type="text" id="thread-imageUrl"></div>
-                            <button type="submit">Submit New Thread</button>
-                        </form>
-                    </div>` : '<div class="form-container">Please log in to create a thread.</div>';
-
-                view.innerHTML = `<div class="view-header">${sectionName}</div>
-                                <div id="thread-list-content">Loading...</div>
-                                ${createThreadForm}`;
-
-                if (auth.currentUser) {
-                    view.querySelector('#new-thread-form').addEventListener('submit', (e) => handleNewThreadSubmit(e, sectionId));
-                }
-
-                db.collection('threads').where('sectionId', '==', sectionId).orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-                    document.getElementById('thread-list-content').innerHTML = createThreadListHTML(snapshot);
+                    const threadData = doc.data();
+                    const threadItemTemplate = document.getElementById('thread-item-template');
+                    const threadElement = threadItemTemplate.content.cloneNode(true);
+                    threadElement.querySelector(".thread-title").textContent = threadData.title;
+                    threadElement.querySelector(".thread-author").textContent = `by ${threadData.username}`;
+                    threadElement.querySelector(".thread-item").addEventListener('click', () => showSingleThreadView(doc.id));
+                    threadListContainer.appendChild(threadElement);
                 });
             });
         }
-
-        async function renderThread(sectionId, threadId) {
-            const view = document.getElementById('thread-view');
-            const threadRef = db.collection('threads').doc(threadId);
-
-            // Increment view count and update hot score
-            db.runTransaction(async (transaction) => {
-                const threadDoc = await transaction.get(threadRef);
-                if (!threadDoc.exists) return;
-                const data = threadDoc.data();
-                const score = data.score || 0;
-                const views = (data.views || 0) + 1;
-                const timestampSeconds = data.timestamp ? data.timestamp.seconds : Math.floor(Date.now() / 1000);
-                const hot_score = calculateHotScore(score, views, timestampSeconds);
-                transaction.update(threadRef, { views: increment(1), hot_score: hot_score });
-            });
-
-            const threadDoc = await threadRef.get();
-            const threadTitle = threadDoc.exists ? threadDoc.data().title : '[Unknown Thread]';
-            
-            const replyForm = auth.currentUser ? `
-                <form id="reply-form" class="form-container">
-                    <h2>Post a Reply</h2>
-                    <div class="form-row"><label for="reply-content">Your Reply:</label><textarea id="reply-content" required></textarea></div>
-                    <div class="form-row"><label for="reply-imageUrl">Image URL (Optional):</label><input type="text" id="reply-imageUrl"></div>
-                    <button type="submit">Submit Reply</button>
-                </form>` : '<div class="form-container">Please log in to reply.</div>';
-
-            view.innerHTML = `<div class="view-header">${threadTitle}</div>
-                              <div id="post-list"></div>
-                              ${replyForm}`;
-            
-            if (auth.currentUser) {
-                view.querySelector('#reply-form').addEventListener('submit', (e) => handleReplySubmit(e, threadId));
-            }
-            
-            const postListContainer = view.querySelector('#post-list');
-            db.collection('posts').where('threadId', '==', threadId).orderBy('timestamp', 'asc').onSnapshot(snapshot => {
-                postListContainer.innerHTML = ''; // Clear old posts
-                snapshot.forEach(doc => renderPost(doc, postListContainer));
-            });
+        async function loadSingleThread(threadId) { /* ... no changes ... */
+            const doc = await postsCollection.doc(threadId).get();
+            const postData = doc.data();
+            const originalPostTemplate = document.getElementById('original-post-template');
+            originalPostContainer.innerHTML = '';
+            const postElement = originalPostTemplate.content.cloneNode(true);
+            postElement.querySelector('#op-title').textContent = postData.title;
+            postElement.querySelector('.username').textContent = postData.username;
+            postElement.querySelector('.content').textContent = postData.content;
+            originalPostContainer.appendChild(postElement);
+            repliesListener = postsCollection.doc(threadId).collection('replies').orderBy('timestamp', 'asc')
+                .onSnapshot(replySnapshot => {
+                    repliesContainer.innerHTML = '';
+                    replySnapshot.forEach(replyDoc => {
+                        const replyData = replyDoc.data();
+                        const replyTemplate = document.getElementById('reply-template');
+                        const replyElement = replyTemplate.content.cloneNode(true);
+                        replyElement.querySelector('.username').textContent = replyData.username;
+                        replyElement.querySelector('.content').textContent = replyData.content;
+                        repliesContainer.appendChild(replyElement);
+                    });
+                });
         }
         
-        async function renderPost(doc, container) {
-            const post = doc.data();
-            const postId = doc.id;
-            const currentUser = auth.currentUser;
-            const postEl = document.createElement('div');
-            postEl.className = 'post-container';
-
-            const imageTag = post.imageUrl ? `<img src="${post.imageUrl}" alt="User content">` : '';
-            const postDate = post.timestamp ? post.timestamp.toDate().toLocaleString() : '...';
-            
-            let voteState = { up: '', down: '' };
-            if (currentUser) {
-                const voteDoc = await db.collection('posts').doc(postId).collection('votes').doc(currentUser.uid).get();
-                if (voteDoc.exists) {
-                    if (voteDoc.data().vote_type === 1) voteState.up = 'voted-up';
-                    if (voteDoc.data().vote_type === -1) voteState.down = 'voted-down';
-                }
-            }
-            
-            postEl.innerHTML = `
-                <div class="post-author">
-                    <div class="author-name">${post.authorEmail}</div>
-                    <div class="vote-actions">
-                        <button class="vote-btn upvote ${voteState.up}" data-post-id="${postId}" ${!currentUser ? 'disabled' : ''}>▲</button>
-                        <span class="vote-score">${post.score || 0}</span>
-                        <button class="vote-btn downvote ${voteState.down}" data-post-id="${postId}" ${!currentUser ? 'disabled' : ''}>▼</button>
-                    </div>
-                </div>
-                <div class="post-body">
-                    <div class="post-meta">Posted on: ${postDate}</div>
-                    <div class="post-content">
-                        <p>${post.content.replace(/\n/g, '<br>')}</p>
-                        ${imageTag}
-                    </div>
-                </div>`;
-            container.appendChild(postEl);
-        }
-
-        function renderLogin() {
-            const view = document.getElementById('login-view');
-            view.innerHTML = `
-                <div class="view-header">Login or Sign Up</div>
-                <div class="form-container">
-                    <h2>Login</h2>
-                    <form id="login-form">
-                        <div class="form-row"><label for="login-email">Email:</label><input id="login-email" type="email" required></div>
-                        <div class="form-row"><label for="login-password">Password:</label><input id="login-password" type="password" required></div>
-                        <button type="submit">Login</button>
-                        <p id="login-error" class="auth-error"></p>
-                    </form>
-                </div>
-                <div class="form-container">
-                    <h2>Sign Up</h2>
-                    <form id="signup-form">
-                        <div class="form-row"><label for="signup-email">Email:</label><input id="signup-email" type="email" required></div>
-                        <div class="form-row"><label for="signup-password">Password:</label><input id="signup-password" type="password" required></div>
-                        <button type="submit">Sign Up</button>
-                        <p id="signup-error" class="auth-error"></p>
-                    </form>
-                </div>`;
-
-            view.querySelector('#login-form').addEventListener('submit', handleLoginSubmit);
-            view.querySelector('#signup-form').addEventListener('submit', handleSignupSubmit);
-        }
-
-        function renderSearchResults(query) {
-            const view = document.getElementById('search-results-view');
-            view.innerHTML = `<div class="view-header">Search Results for: "${query}"</div><div id="search-results-list">Loading...</div>`;
-            db.collection('threads')
-              .where('title_lowercase', '>=', query.toLowerCase())
-              .where('title_lowercase', '<=', query.toLowerCase() + '\uf8ff')
-              .orderBy('title_lowercase')
-              .orderBy('timestamp', 'desc')
-              .limit(20)
-              .get().then(snapshot => {
-                  document.getElementById('search-results-list').innerHTML = createThreadListHTML(snapshot);
-              });
-        }
-        
-        function createThreadListHTML(snapshot) {
-            let html = `<div class="list-header">
-                            <div class="list-row-main">Thread</div>
-                            <div class="list-row-side">Score</div>
-                            <div class="list-row-side">Views</div>
-                            <div class="list-row-side-wide">Author</div>
-                        </div>`;
-            if (snapshot.empty) return html + '<div class="list-row"><div class="list-row-main">No threads found.</div></div>';
-            snapshot.forEach(doc => {
-                const thread = doc.data();
-                html += `<div class="list-row">
-                            <div class="list-row-main">
-                                <a class="title" href="#" onclick="showView('thread-view', {sectionId: '${thread.sectionId}', threadId: '${doc.id}'})">${thread.title}</a>
-                            </div>
-                            <td class="list-row-side">${thread.score || 0}</td>
-                            <td class="list-row-side">${thread.views || 0}</td>
-                            <td class="list-row-side-wide">${thread.authorEmail}</td>
-                        </div>`;
-            });
-            return html;
-        }
-        
-        function calculateHotScore(score, views, timestampSeconds) {
-            const order = Math.log10(Math.max(Math.abs(score), 1) + Math.log10(views || 1));
-            const sign = score > 0 ? 1 : (score < 0 ? -1 : 0);
-            return (sign * order) + (timestampSeconds / 45000);
-        }
-        
-        // --- EVENT HANDLERS ---
-        async function handleLoginSubmit(e) { /* ... */ }
-        async function handleSignupSubmit(e) { /* ... */ }
-        async function handleNewThreadSubmit(e, sectionId) { /* ... */ }
-        async function handleReplySubmit(e, threadId) { /* ... */ }
-
-        // --- DELEGATED VOTE HANDLER ---
-        document.querySelector('.container').addEventListener('click', (e) => {
-            const button = e.target.closest('.vote-btn');
-            if (button) handleVote(button);
+        // --- BUTTON ACTIONS ---
+        showCreateFormButton.addEventListener('click', () => { showCreateFormButton.classList.add('hidden'); newThreadForm.classList.remove('hidden'); });
+        document.getElementById('cancel-post-button').addEventListener('click', () => { newThreadForm.classList.add('hidden'); showCreateFormButton.classList.remove('hidden'); });
+        document.getElementById('new-thread-button').addEventListener('click', () => { /* ... no changes ... */
+            const titleInput = document.getElementById('new-thread-title'); const contentInput = document.getElementById('new-thread-content'); const title = titleInput.value.trim(); const content = contentInput.value.trim();
+            if (title && content && currentUserProfile) {
+                postsCollection.add({ userId: auth.currentUser.uid, username: currentUserProfile.username, title: title, content: content, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+                titleInput.value = ""; contentInput.value = ""; newThreadForm.classList.add('hidden'); showCreateFormButton.classList.remove('hidden');
+            } else { alert("Please provide both a title and content for your thread."); }
         });
+        document.getElementById('submit-reply-button').addEventListener('click', () => { /* ... no changes ... */
+            const content = document.getElementById('reply-content').value.trim();
+            if (content && currentUserProfile && currentThreadId) {
+                postsCollection.doc(currentThreadId).collection('replies').add({ userId: auth.currentUser.uid, username: currentUserProfile.username, content: content, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+                document.getElementById('reply-content').value = '';
+            }
+        });
+        document.querySelectorAll('.back-button').forEach(button => button.addEventListener('click', showThreadListView));
 
-        async function handleVote(button) {
-            const currentUser = auth.currentUser;
-            if (!currentUser) return alert("You must be logged in to vote.");
-            const postId = button.dataset.postId;
-            const voteDirection = button.classList.contains('upvote') ? 1 : -1;
-            const docRef = db.collection('posts').doc(postId);
-            const userVoteRef = docRef.collection('votes').doc(currentUser.uid);
-
-            await db.runTransaction(async (transaction) => {
-                const userVoteDoc = await transaction.get(userVoteRef);
-                const postDoc = await transaction.get(docRef);
-                if (!postDoc.exists) throw "Document does not exist!";
-
-                const currentVote = userVoteDoc.exists ? userVoteDoc.data().vote_type : 0;
-                let scoreIncrement = 0;
-
-                if (currentVote === voteDirection) { // Undoing vote
-                    scoreIncrement = -voteDirection;
-                    transaction.delete(userVoteRef);
-                } else { // New or changing vote
-                    scoreIncrement = voteDirection - currentVote;
-                    transaction.set(userVoteRef, { vote_type: voteDirection });
-                }
-                transaction.update(docRef, { score: increment(scoreIncrement) });
-            });
+        // --- SETTINGS LOGIC ---
+        function applyTheme(themeName) {
+            document.body.setAttribute('data-theme', themeName);
+            localStorage.setItem('forum-theme', themeName);
         }
+        document.querySelectorAll('.theme-buttons button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                applyTheme(e.target.dataset.theme);
+            });
+        });
+        document.getElementById('clear-all-posts-button').addEventListener('click', async () => { /* ... no changes ... */
+            const pass = prompt("This is a destructive action. Please enter the admin password to proceed:"); if (pass !== "JonDangle") { alert("Incorrect password."); return; }
+            if (!confirm("Are you sure you want to permanently delete all posts and replies? This cannot be undone.")) return;
+            const clearButton = document.getElementById('clear-all-posts-button'); clearButton.textContent = "Deleting..."; clearButton.disabled = true;
+            try {
+                const postsSnapshot = await postsCollection.get(); const batch = db.batch();
+                for (const postDoc of postsSnapshot.docs) {
+                    const repliesSnapshot = await postDoc.ref.collection('replies').get();
+                    repliesSnapshot.forEach(replyDoc => batch.delete(replyDoc.ref));
+                    batch.delete(postDoc.ref);
+                }
+                await batch.commit(); alert("All posts and replies have been successfully deleted."); showThreadListView();
+            } catch (error) { console.error("Error clearing posts: ", error); alert("An error occurred while clearing posts."); } finally { clearButton.textContent = "Clear All Posts & Replies"; clearButton.disabled = false; }
+        });
     </script>
 </body>
 </html>
